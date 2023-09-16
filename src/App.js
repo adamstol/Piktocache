@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import Pikto from './components/Pikto'
 import './App.css';
 
 import firebase from 'firebase/compat/app'; 
@@ -26,21 +27,37 @@ const analytics = firebase.analytics();
 
 
 function App() {
-
   const [user] = useAuthState(auth);
+  const [isOpen, setIsOpen] = useState(false);
+  const [color, setColor] = useState();
 
   return (
-    <div className="App">
-      <header>
-        <h1>🎨</h1>
-        <SignOut />
-      </header>
+    <>
+      <div className="App">
+        <header>
+          <h1>🎨</h1>
+          <SignOut />
+        </header>
 
-      <section>
-        {user ? <ChatRoom /> : <SignIn />}
-      </section>
+        <section>
+          {user ? <ChatRoom isOpen={isOpen} setIsOpen={setIsOpen}/> : <SignIn />}
+        </section>
 
-    </div>
+        </div>
+        <div className={isOpen ? "drawer open" : "hide"} style={{zIndex: 1}}>
+          <div className="drawer-contents" style={{width: 800, height: 500, backgroundColor: 'white', zIndex: 99}}>
+            <Pikto
+              width={800}
+              height={500}
+              penColor={color}
+              setColor={setColor}
+              isOpen={isOpen}
+              setIsOpen={setIsOpen}
+            />
+          </div>
+        </div>
+    </>
+
   );
 }
 
@@ -66,7 +83,7 @@ function SignOut() {
 }
 
 
-function ChatRoom() {
+function ChatRoom({isOpen, setIsOpen}) {
   const dummy = useRef();
   const messagesRef = firestore.collection('messages');
   const query = messagesRef.orderBy('createdAt').limit(25);
@@ -105,6 +122,9 @@ function ChatRoom() {
 
       <input value={formValue} onChange={(e) => setFormValue(e.target.value)} placeholder="Draw a message" />
 
+      <button onClick={() => {
+        setIsOpen(true);
+      }} type="submit">✏️</button>
       <button type="submit" disabled={!formValue}>💬</button>
 
     </form>
