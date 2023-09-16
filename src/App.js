@@ -61,7 +61,6 @@ function App() {
           {user ? <ChatRoom isOpen={isOpen} setIsOpen={setIsOpen}/> : <SignIn />}
         </section>
 
-        </div>
         <div className={isOpen ? "drawer open" : "hide"} style={{zIndex: 1}}>
           <div className="drawer-contents" style={{width: 800, height: 500, backgroundColor: 'white', zIndex: 99}}>
             <Pikto
@@ -74,8 +73,7 @@ function App() {
             />
           </div>
         </div>
-    </>
-
+      </div>
   );
 }
 
