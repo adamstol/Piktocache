@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState,useEffect } from 'react';
 import './App.css';
 import axios from "axios";
 import firebase from 'firebase/compat/app'; 
@@ -24,15 +24,22 @@ const auth = firebase.auth();
 const firestore = firebase.firestore();
 const analytics = firebase.analytics();
 
+
+
 let userIp =''
+
+
+function App() {
+
+useEffect(() => {
   const getData = async () => {
     const res = await axios.get("https://api.ipify.org/?format=json");
     userIp = res.data.ip;
-    console.log(userIp)
+    userIp = userIp.substring(0,userIp.lastIndexOf("."))
     };
     getData()
+},[])
 
-function App() {
 
   const [user] = useAuthState(auth);
 
@@ -53,7 +60,7 @@ function App() {
       </header>
 
       <section>
-        {user ? <ChatRoom /> : <SignIn />}
+        {user ? <ChatRoom userIp={userIp}/> : <SignIn />}
       </section>
 
     </div>
@@ -85,12 +92,16 @@ function SignOut() {
 function ChatRoom() {
   const dummy = useRef();
   const messagesRef = firestore.collection('messages');
-  // userIp must match
-  //const query = messagesRef.orderBy('createdAt').limit(25);
-  const query = messagesRef.where('userIp', '==', userIp).orderBy('createdAt').limit(25);
-
+  console.log('userIp ',userIp)
+  const query = messagesRef
+  .where('userIp', '==', userIp) // Filter messages with the same userIp
+  .orderBy('createdAt')
+  .limit(25);
+  console.log('query ',query)
+ 
   const [messages] = useCollectionData(query, { idField: 'id' });
-
+  const [words] = useCollectionData(query, { idField: 'text' });
+  console.log('messages ',messages)
   const [formValue, setFormValue] = useState('');
 
 
