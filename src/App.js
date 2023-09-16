@@ -96,8 +96,7 @@ function ChatRoom() {
   
   const query = messagesRef
   //.where('userIp', '==', userIp) // Filter messages with the same userIp
-  .orderBy('createdAt')
-  .limit(25);
+  .orderBy('createdAt');
   //console.log('query ',query)
   
   const [data] = useCollectionData(query,{idField:'id'});
@@ -115,15 +114,17 @@ function ChatRoom() {
   }
 
   const [messages] = useCollectionData(query, { idField: 'id' });
-  let messagess = messages
   let ipMessages = [];
-  /*
-  messagess.forEach(message =>{
-    if (message.userIp != undefined && message.userIp == userIp){
-      ipMessages.push(message);
-    }
-  })
-  */
+  
+  if (messages != undefined){
+    messages.forEach(message =>{
+      if (message.userIp != undefined && message.userIp == userIp){
+        ipMessages.push(message);
+      }
+    })
+  }
+  console.log('ip msg: ',ipMessages)
+  
   
 
   const [words] = useCollectionData(query, { idField: 'text' });
