@@ -6,12 +6,12 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-<<<<<<< HEAD
-    "dotenv": "^16.3.1",
-=======
     "axios": "^1.5.0",
->>>>>>> 6471287a0a8b3820c1a7e1d97b1d48167e4c081a
+    "crypto-browserify": "^3.12.0",
+    "dotenv": "^16.3.1",
     "firebase": "^10.4.0",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-firebase-hooks": "^5.1.1",
