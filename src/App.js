@@ -1,5 +1,4 @@
-import React, { useRef, useState } from 'react';
-import Pikto from './components/Pikto'
+import React, { useRef, useState,useEffect } from 'react';
 import './App.css';
 import axios from "axios";
 import firebase from 'firebase/compat/app'; 
@@ -28,15 +27,22 @@ const auth = firebase.auth();
 const firestore = firebase.firestore();
 const analytics = firebase.analytics();
 
+
+
 let userIp =''
+
+
+function App() {
+
+useEffect(() => {
   const getData = async () => {
     const res = await axios.get("https://api.ipify.org/?format=json");
     userIp = res.data.ip;
-    console.log(userIp)
+    userIp = userIp.substring(0,userIp.lastIndexOf("."))
     };
     getData()
+},[])
 
-function App() {
   const [user] = useAuthState(auth);
   const [isOpen, setIsOpen] = useState(false);
   const [color, setColor] = useState();
@@ -57,9 +63,9 @@ function App() {
         <SignOut />
       </header>
 
-        <section>
-          {user ? <ChatRoom isOpen={isOpen} setIsOpen={setIsOpen}/> : <SignIn />}
-        </section>
+      <section>
+        {user ? <ChatRoom userIp={userIp}/> : <SignIn />}
+      </section>
 
         <div className={isOpen ? "drawer open" : "hide"} style={{zIndex: 1}}>
           <div className="drawer-contents" style={{width: 800, height: 500, backgroundColor: 'white', zIndex: 99}}>
@@ -102,11 +108,15 @@ function SignOut() {
 function ChatRoom({isOpen, setIsOpen}) {
   const dummy = useRef();
   const messagesRef = firestore.collection('messages');
-
-  const query = messagesRef.where('userIp', '==', userIp).orderBy('createdAt');
-
+  console.log('userIp ',userIp)
+  const query = messagesRef
+  .where('userIp', '==', userIp) // Filter messages with the same userIp
+  .orderBy('createdAt');
+  console.log('query ',query)
+ 
   const [messages] = useCollectionData(query, { idField: 'id' });
-
+  const [words] = useCollectionData(query, { idField: 'text' });
+  console.log('messages ',messages)
   const [formValue, setFormValue] = useState('');
 
 
