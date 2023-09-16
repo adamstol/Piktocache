@@ -162,7 +162,7 @@ function ChatRoom() {
 
       <input value={formValue} onChange={(e) => setFormValue(e.target.value)} placeholder="Write a message" />
       
-      <button id="openDrawing"> Draw </button>
+      <button id="openDrawing"> 🎨 </button>
       <button type="submit" disabled={!formValue}>💬</button>
     </form>
   </>)
