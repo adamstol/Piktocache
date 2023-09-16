@@ -1,7 +1,6 @@
-import React, { useRef, useState } from 'react';
-import Pikto from './components/Pikto'
+import React, { useRef, useState,useEffect } from 'react';
 import './App.css';
-
+import axios from "axios";
 import firebase from 'firebase/compat/app'; 
 import 'firebase/compat/firestore';
 import 'firebase/compat/auth';
@@ -26,37 +25,34 @@ const firestore = firebase.firestore();
 const analytics = firebase.analytics();
 
 
+
+let userIp =''
+
+
 function App() {
   const [user] = useAuthState(auth);
   const [isOpen, setIsOpen] = useState(false);
   const [color, setColor] = useState();
 
   return (
-    <>
-      <div className="App">
-        <header>
-          <h1>🎨</h1>
-          <SignOut />
-        </header>
+    <div className="App">
+      <header>
+        <h1>
+          <svg width="82" height="73" viewBox="0 0 82 73" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M79.4012 7.07227H2.59919C2.29686 7.07227 2.05176 7.31981 2.05176 7.62516V54.4398C2.05176 54.7451 2.29686 54.9927 2.59919 54.9927H58.7995C58.9582 54.9927 59.1083 55.0625 59.213 55.1824L72.6204 70.7342C72.981 71.1519 73.658 70.8345 73.5749 70.2871L71.3592 55.6284C71.3085 55.2936 71.5654 54.9916 71.9002 54.9916H79.4012C79.7036 54.9916 79.9487 54.744 79.9487 54.4387V7.62516C79.9487 7.31981 79.7036 7.07227 79.4012 7.07227Z" fill="white"/>
+          <path d="M73.024 73C72.293 73 71.5814 72.6848 71.0718 72.0949L58.1147 57.0643H2.59898C1.16614 57.0643 0 55.8866 0 54.4395V7.62486C0 6.17775 1.16614 5 2.59898 5H79.401C80.8339 5 82 6.17775 82 7.62486V54.4395C82 55.8866 80.8339 57.0643 79.401 57.0643H73.6502L75.6014 69.9749C75.7774 71.1407 75.1846 72.2574 74.1243 72.7525C73.7679 72.9193 73.3933 73 73.0229 73H73.024ZM4.10308 52.9204H58.7993C59.5508 52.9204 60.2656 53.2486 60.759 53.8222L70.763 65.4264L69.3291 55.9422C69.2146 55.1843 69.4327 54.4166 69.9272 53.8353C70.4218 53.2541 71.1398 52.9204 71.8989 52.9204H77.8969V9.14395H4.10308V52.9204Z" fill="#231F20"/>
+          <path d="M32.5181 48.1931C29.051 48.1931 26.3776 46.782 25.0074 45.8638C24.2612 45.3643 24.0582 44.3501 24.5517 43.5966C25.0462 42.8431 26.0504 42.638 26.7965 43.1364C27.9842 43.9314 30.4461 45.2127 33.5914 44.8605C35.116 44.6893 36.6212 44.1397 37.9439 43.2705C38.6933 42.7776 39.6964 42.9925 40.1844 43.7493C40.6725 44.5061 40.4598 45.5192 39.7104 46.0121C37.9655 47.1593 35.9734 47.8845 33.9477 48.1113C33.4575 48.1659 32.9803 48.1909 32.5181 48.1909V48.1931Z" fill="#231F20"/>
+          <path d="M16.7902 37.904C18.281 37.904 19.4896 36.2205 19.4896 34.1439C19.4896 32.0672 18.281 30.3838 16.7902 30.3838C15.2994 30.3838 14.0908 32.0672 14.0908 34.1439C14.0908 36.2205 15.2994 37.904 16.7902 37.904Z" fill="#231F20"/>
+          <path d="M49.6662 37.904C51.157 37.904 52.3656 36.2205 52.3656 34.1439C52.3656 32.0672 51.157 30.3838 49.6662 30.3838C48.1754 30.3838 46.9668 32.0672 46.9668 34.1439C46.9668 36.2205 48.1754 37.904 49.6662 37.904Z" fill="#231F20"/>
+          </svg>
 
-        <section>
-          {user ? <ChatRoom isOpen={isOpen} setIsOpen={setIsOpen}/> : <SignIn />}
-        </section>
+        </h1>
+        <SignOut />
+      </header>
 
-        </div>
-        <div className={isOpen ? "drawer open" : "hide"} style={{zIndex: 1}}>
-          <div className="drawer-contents" style={{width: 800, height: 500, backgroundColor: 'white', zIndex: 99}}>
-            <Pikto
-              width={800}
-              height={500}
-              penColor={color}
-              setColor={setColor}
-              isOpen={isOpen}
-              setIsOpen={setIsOpen}
-            />
-          </div>
-        </div>
-    </>
+      <section>
+        {user ? <ChatRoom userIp={userIp}/> : <SignIn />}
+      </section>
 
   );
 }
@@ -86,10 +82,42 @@ function SignOut() {
 function ChatRoom({isOpen, setIsOpen}) {
   const dummy = useRef();
   const messagesRef = firestore.collection('messages');
-  const query = messagesRef.orderBy('createdAt').limit(25);
+  //console.log('userIp ',userIp)
+  
+  const query = messagesRef
+  //.where('userIp', '==', userIp) // Filter messages with the same userIp
+  .orderBy('createdAt')
+  .limit(25);
+  //console.log('query ',query)
+  
+  const [data] = useCollectionData(query,{idField:'id'});
+  if (data) {
+  const documentsWithUserIp = data.filter((doc) => doc.hasOwnProperty('userIp'));
+  
+  documentsWithUserIp.forEach((doc) => {
+      // Access and use doc.userIp here if it exists
+      if (doc.userIp) {
+        console.log('User IP:', doc.userIp);
+      } else {
+        console.log('User IP does not exist in this document.');
+      }
+    });
+  }
 
   const [messages] = useCollectionData(query, { idField: 'id' });
+  let messagess = messages
+  let ipMessages = [];
+  /*
+  messagess.forEach(message =>{
+    if (message.userIp != undefined && message.userIp == userIp){
+      ipMessages.push(message);
+    }
+  })
+  */
+  
 
+  const [words] = useCollectionData(query, { idField: 'text' });
+  console.log('messages ',messages)
   const [formValue, setFormValue] = useState('');
 
 
@@ -102,7 +130,8 @@ function ChatRoom({isOpen, setIsOpen}) {
       text: formValue,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       uid,
-      photoURL
+      photoURL,
+      userIp
     })
 
     setFormValue('');
@@ -120,13 +149,10 @@ function ChatRoom({isOpen, setIsOpen}) {
 
     <form onSubmit={sendMessage}>
 
-      <input value={formValue} onChange={(e) => setFormValue(e.target.value)} placeholder="Draw a message" />
-
-      <button onClick={() => {
-        setIsOpen(true);
-      }} type="submit">✏️</button>
+      <input value={formValue} onChange={(e) => setFormValue(e.target.value)} placeholder="Write a message" />
+      
+      <button id="openDrawing"> Draw </button>
       <button type="submit" disabled={!formValue}>💬</button>
-
     </form>
   </>)
 }
