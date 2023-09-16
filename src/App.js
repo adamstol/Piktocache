@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import Pikto from './components/Pikto'
 import './App.css';
 import axios from "axios";
 import firebase from 'firebase/compat/app'; 
@@ -36,8 +37,9 @@ let userIp =''
     getData()
 
 function App() {
-
   const [user] = useAuthState(auth);
+  const [isOpen, setIsOpen] = useState(false);
+  const [color, setColor] = useState();
 
   return (
     <div className="App">
@@ -55,11 +57,23 @@ function App() {
         <SignOut />
       </header>
 
-      <section>
-        {user ? <ChatRoom /> : <SignIn />}
-      </section>
+        <section>
+          {user ? <ChatRoom isOpen={isOpen} setIsOpen={setIsOpen}/> : <SignIn />}
+        </section>
 
-    </div>
+        <div className={isOpen ? "drawer open" : "hide"} style={{zIndex: 1}}>
+          <div className="drawer-contents" style={{width: 800, height: 500, backgroundColor: 'white', zIndex: 99}}>
+            <Pikto
+              width={800}
+              height={500}
+              penColor={color}
+              setColor={setColor}
+              isOpen={isOpen}
+              setIsOpen={setIsOpen}
+            />
+          </div>
+        </div>
+      </div>
   );
 }
 
@@ -85,7 +99,7 @@ function SignOut() {
 }
 
 
-function ChatRoom() {
+function ChatRoom({isOpen, setIsOpen}) {
   const dummy = useRef();
   const messagesRef = firestore.collection('messages');
 
@@ -124,9 +138,11 @@ function ChatRoom() {
 
     <form onSubmit={sendMessage}>
 
-      <input value={formValue} onChange={(e) => setFormValue(e.target.value)} placeholder="Write a message" />
-      
-      <button id="openDrawing"> Draw </button>
+      <input value={formValue} onChange={(e) => setFormValue(e.target.value)} placeholder="Draw a message" />
+
+      <button onClick={() => {
+        setIsOpen(true);
+      }} type="submit">✏️</button>
       <button type="submit" disabled={!formValue}>💬</button>
     </form>
   </>)
