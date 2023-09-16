@@ -8,9 +8,12 @@ import 'firebase/compat/analytics';
 
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
+require('dotenv').config();
+
+console.log(process.env);
 
 firebase.initializeApp({
-  apiKey: "AIzaSyA6og4aGbQpuloGA348KA38v-SaADuuwY0",
+  apiKey: process.env.API_KEY,
   authDomain: "piktocache.firebaseapp.com",
   databaseURL: "https://piktocache-default-rtdb.firebaseio.com",
   projectId: "piktocache",
@@ -78,7 +81,7 @@ function SignOut() {
 function ChatRoom() {
   const dummy = useRef();
   const messagesRef = firestore.collection('messages');
-  const query = messagesRef.orderBy('createdAt').limit(25);
+  const query = messagesRef.orderBy('createdAt');
 
   const [messages] = useCollectionData(query, { idField: 'id' });
 
@@ -105,7 +108,7 @@ function ChatRoom() {
     <main>
 
       {messages && messages.map(msg => <ChatMessage key={msg.id} message={msg} />)}
-
+     
       <span ref={dummy}></span>
 
     </main>
