@@ -92,14 +92,40 @@ function SignOut() {
 function ChatRoom() {
   const dummy = useRef();
   const messagesRef = firestore.collection('messages');
-  console.log('userIp ',userIp)
+  //console.log('userIp ',userIp)
+  
   const query = messagesRef
-  .where('userIp', '==', userIp) // Filter messages with the same userIp
+  //.where('userIp', '==', userIp) // Filter messages with the same userIp
   .orderBy('createdAt')
   .limit(25);
-  console.log('query ',query)
- 
+  //console.log('query ',query)
+  
+  const [data] = useCollectionData(query,{idField:'id'});
+  if (data) {
+  const documentsWithUserIp = data.filter((doc) => doc.hasOwnProperty('userIp'));
+  
+  documentsWithUserIp.forEach((doc) => {
+      // Access and use doc.userIp here if it exists
+      if (doc.userIp) {
+        console.log('User IP:', doc.userIp);
+      } else {
+        console.log('User IP does not exist in this document.');
+      }
+    });
+  }
+
   const [messages] = useCollectionData(query, { idField: 'id' });
+  let messagess = messages
+  let ipMessages = [];
+  /*
+  messagess.forEach(message =>{
+    if (message.userIp != undefined && message.userIp == userIp){
+      ipMessages.push(message);
+    }
+  })
+  */
+  
+
   const [words] = useCollectionData(query, { idField: 'text' });
   console.log('messages ',messages)
   const [formValue, setFormValue] = useState('');
