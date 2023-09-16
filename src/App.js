@@ -102,8 +102,9 @@ function SignOut() {
 function ChatRoom({isOpen, setIsOpen}) {
   const dummy = useRef();
   const messagesRef = firestore.collection('messages');
-
-  const query = messagesRef.where('userIp', '==', userIp).orderBy('createdAt');
+  // userIp must match
+  //const query = messagesRef.orderBy('createdAt').limit(25);
+  const query = messagesRef.where('userIp', '==', userIp).orderBy('createdAt').limit(25);
 
   const [messages] = useCollectionData(query, { idField: 'id' });
 
