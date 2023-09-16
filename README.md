@@ -1,5 +1,5 @@
 # Piktocache
-Created during UWaterloo's 2023 Hack the North Event, we took upon ourselves to create a umique social experience in urban spaces in which users who are under the same IP address. Inspired by our nostalgia for Nintendo's DS Piktochat feature as well as the unique quality of geocaching, we combined these experiences to reshape the way that people can interact in urban spaces.
+Created during UWaterloo's 2023 Hack the North Event, we took upon ourselves to create a unique social experience in urban spaces in which users who are under the same IP address. Inspired by our nostalgia for Nintendo's DS Piktochat feature as well as the unique quality of geocaching, we combined these experiences to reshape the way that people can interact in urban spaces.
 
 ## How does Piktocache work?
 Piktocache is a browser based chat, where people can leave behind or discover messages as well as have brief encounters with strangers. It also contains the ability to both send messages as well as drawings into the chat. 
