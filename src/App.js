@@ -116,7 +116,7 @@ function ChatRoom() {
   return (<>
     <main>
 
-      {messages && messages.map(msg => <ChatMessage key={msg.id} message={msg} />)}
+      {messages && messages.map(msg => <ChatMessage key={msg.id} message={msg} /> && messages != null)}
      
       <span ref={dummy}></span>
 
