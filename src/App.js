@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import './App.css';
-
+import axios from "axios";
 import firebase from 'firebase/compat/app'; 
 import 'firebase/compat/firestore';
 import 'firebase/compat/auth';
@@ -27,6 +27,13 @@ const auth = firebase.auth();
 const firestore = firebase.firestore();
 const analytics = firebase.analytics();
 
+let userIp =''
+  const getData = async () => {
+    const res = await axios.get("https://api.ipify.org/?format=json");
+    userIp = res.data.ip;
+    console.log(userIp)
+    };
+    getData()
 
 function App() {
 
@@ -81,7 +88,8 @@ function SignOut() {
 function ChatRoom() {
   const dummy = useRef();
   const messagesRef = firestore.collection('messages');
-  const query = messagesRef.orderBy('createdAt');
+
+  const query = messagesRef.where('userIp', '==', userIp).orderBy('createdAt');
 
   const [messages] = useCollectionData(query, { idField: 'id' });
 
@@ -97,7 +105,8 @@ function ChatRoom() {
       text: formValue,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       uid,
-      photoURL
+      photoURL,
+      userIp
     })
 
     setFormValue('');
