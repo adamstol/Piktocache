@@ -24,16 +24,13 @@ const auth = firebase.auth();
 const firestore = firebase.firestore();
 const analytics = firebase.analytics();
 
-
-
 let userIp =''
-
 
 function App() {
   const [user] = useAuthState(auth);
   const [isOpen, setIsOpen] = useState(false);
   const [color, setColor] = useState();
-
+  
   return (
     <div className="App">
       <header>
@@ -53,7 +50,7 @@ function App() {
       <section>
         {user ? <ChatRoom userIp={userIp}/> : <SignIn />}
       </section>
-
+    </div>
   );
 }
 
@@ -87,7 +84,7 @@ function ChatRoom({isOpen, setIsOpen}) {
   const query = messagesRef
   //.where('userIp', '==', userIp) // Filter messages with the same userIp
   .orderBy('createdAt')
-  .limit(25);
+  .limit(999);
   //console.log('query ',query)
   
   const [data] = useCollectionData(query,{idField:'id'});
@@ -125,17 +122,20 @@ function ChatRoom({isOpen, setIsOpen}) {
     e.preventDefault();
 
     const { uid, photoURL } = auth.currentUser;
+    
+    if ( formValue.trim().length > 0 ) {
+      await messagesRef.add({
+        text: formValue,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        uid,
+        photoURL,
+        userIp
+      })
 
-    await messagesRef.add({
-      text: formValue,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      uid,
-      photoURL,
-      userIp
-    })
+      setFormValue('');
+      dummy.current.scrollIntoView({ behavior: 'smooth' });      
+    }
 
-    setFormValue('');
-    dummy.current.scrollIntoView({ behavior: 'smooth' });
   }
 
   return (<>
