@@ -154,6 +154,8 @@ function ChatRoom({isOpen, setIsOpen}) {
 
   }
 
+  }
+
   return (<>
     <main>
 
