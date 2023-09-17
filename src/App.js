@@ -63,6 +63,12 @@ useEffect(() => {
         <Signout auth={auth}/>
       </header>
       
+      <div className={isOpen ? "drawer open" : "drawer hide"} 
+          onClick = {() => {
+            setIsOpen(false);
+          }}
+          style={{position: 'absolute', backgroundColor: 'rgba(0, 0, 0, 0.75)', width: '100%', height: '100%', zIndex: 99}}>    
+      </div>
       <div className={isOpen ? "drawer open" : "drawer hide"}>
         <Drawer isOpen={isOpen} setIsOpen={setIsOpen}/>
       </div>        
