@@ -103,9 +103,25 @@ function ChatRoom({isOpen, setIsOpen, image}) {
   const dummy = useRef();
   const messagesRef = firestore.collection('messages');
   console.log('userIp ',userIp)
-  useEffect(() => {
-    setFormValue(image)
-    sendMessage();
+
+  useEffect( () => {
+    return async () => {
+      setFormValue(image)
+      const { uid, photoURL } = auth.currentUser;
+
+      if (image && image.trim().length > 0){
+        await messagesRef.add({
+          text: image,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          uid,
+          photoURL,
+          userIp
+        })
+
+        setFormValue('');
+        dummy.current.scrollIntoView({ behavior: 'smooth' });          
+      }
+    }
   }, [image])
   
   const query = messagesRef
