@@ -2,7 +2,7 @@ import useOnDraw from './Hooks'
 import { useState, useRef, useEffect } from 'react'
 import Arrow from '../assets/send_arrow.svg'
 
-const Pikto = ({width, height, penColor, setColor, isOpen, setIsOpen}) => {
+const Pikto = ({width, height, penColor, setColor, isOpen, setIsOpen, setImage}) => {
     const setPiktoRef = useOnDraw(onDraw);
     const originalCanvas = useRef(null);
 
@@ -25,7 +25,7 @@ const Pikto = ({width, height, penColor, setColor, isOpen, setIsOpen}) => {
         ctx.moveTo(start.x, start.y);
         ctx.lineTo(end.x, end.y);
         ctx.stroke();
-
+        
         ctx.fillStyle = color;
         ctx.beginPath();
         ctx.strokeRect(start.x, start.y, 2, 0, 2 * Math.PI);
@@ -36,9 +36,12 @@ const Pikto = ({width, height, penColor, setColor, isOpen, setIsOpen}) => {
     return (
     <div style={piktoStyle}>
         <div style={{position: 'absolute'}}>
-            <button onClick={() => {
+            <button 
+            onClick={() => {
                 setIsOpen(false);
-            }} style={topBtns}>
+            }} 
+            style={topBtns}
+            className="pixelated">
                 Exit
             </button>           
         </div>
@@ -65,14 +68,17 @@ const Pikto = ({width, height, penColor, setColor, isOpen, setIsOpen}) => {
             <button
                 onClick = {() => {
                     clearPikto();
-                }} 
+                }}
+                className="pixelate" 
                 style={{backgroundColor: 'rgba(0,0,0,0.5)', border: 'none', color: 'white', fontFamily: 'SF_Pixelate', fontSize: '1.15rem'}}>
                 Erase
             </button>
             <button
                 onClick={() => {
                     let x = originalCanvas.current.toDataURL('image/png');
-                    console.log(x)
+                    setImage(x);
+                    // console.log(x);
+                    setIsOpen(false);
                 }} 
                 style={{backgroundColor: 'rgba(0,0,0,0.5)', border: 'none', color: 'white'}}>
                 <img src={Arrow}/>

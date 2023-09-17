@@ -34,19 +34,18 @@ let userIp =''
 
 function App() {
 
-useEffect(() => {
-  const getData = async () => {
-    const res = await axios.get("https://api.ipify.org/?format=json");
-    userIp = res.data.ip;
-    userIp = userIp.substring(0,userIp.lastIndexOf("."))
-    };
-    getData()
-},[])
-
+  useEffect(() => {
+    const getData = async () => {
+      const res = await axios.get("https://api.ipify.org/?format=json");
+      userIp = res.data.ip;
+      userIp = userIp.substring(0,userIp.lastIndexOf("."))
+      };
+      getData()
+  },[])
 
   const [user] = useAuthState(auth);
   const [isOpen, setIsOpen] = useState();
-  const [color, setColor] = useState("#000000");
+  const [image, setImage] = useState();
 
   return (
     <div className="App">
@@ -73,11 +72,11 @@ useEffect(() => {
           style={{position: 'fixed', backgroundColor: 'rgba(0, 0, 0, 0.75)', width: '100%', height: '100%', zIndex: 99}}>    
       </div>
       <div className={isOpen ? "drawer open" : "drawer hide"}>
-        <Drawer isOpen={isOpen} setIsOpen={setIsOpen}/>
+        <Drawer isOpen={isOpen} setIsOpen={setIsOpen} setImage={setImage}/>
       </div>        
 
       <section>
-        {user ? <ChatRoom userIp={userIp} isOpen={isOpen} setIsOpen={setIsOpen}/> : <SignIn />}
+        {user ? <ChatRoom userIp={userIp} isOpen={isOpen} setIsOpen={setIsOpen} image={image}/> : <SignIn />}
       </section>
 
     </div>
@@ -100,10 +99,14 @@ function SignIn() {
 }
 
 
-function ChatRoom({isOpen, setIsOpen}) {
+function ChatRoom({isOpen, setIsOpen, image}) {
   const dummy = useRef();
   const messagesRef = firestore.collection('messages');
-  //console.log('userIp ',userIp)
+  console.log('userIp ',userIp)
+  useEffect(() => {
+    setFormValue(image)
+    sendMessage();
+  }, [image])
   
   const query = messagesRef
   //.where('userIp', '==', userIp) // Filter messages with the same userIp
@@ -144,11 +147,12 @@ function ChatRoom({isOpen, setIsOpen}) {
 
 
   const sendMessage = async (e) => {
-    e.preventDefault();
-
+    if (e) {
+      e.preventDefault();
+    }
     const { uid, photoURL } = auth.currentUser;
 
-    if (formValue.trim().length > 0){
+    if (formValue && formValue.trim().length > 0){
       await messagesRef.add({
         text: formValue,
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -166,7 +170,14 @@ function ChatRoom({isOpen, setIsOpen}) {
   return (<>
     <main>
 
-      {messages && messages.map(msg => <ChatMessage key={msg.id} message={msg} />)}
+      {messages && messages.slice(186).map(msg => {
+        if (String(msg).startsWith("data:")) {
+          return <img id={msg.id} src={msg}/>; 
+        } else {// <ChatImage key={msg.id} src={msg}/>
+          return <ChatMessage key={msg.id} message={msg}/>;
+        }
+        })
+      };
 
       <span ref={dummy}></span>
 

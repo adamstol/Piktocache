@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import Pikto from './Pikto'
 
-export default function Drawer({isOpen, setIsOpen}) {
+export default function Drawer({isOpen, setIsOpen, setImage}) {
     const [color, setColor] = useState();
 
     return (
@@ -13,6 +13,7 @@ export default function Drawer({isOpen, setIsOpen}) {
             setColor={setColor}
             isOpen={isOpen} 
             setIsOpen={setIsOpen}
+            setImage={setImage}
         />
     </div>
   )

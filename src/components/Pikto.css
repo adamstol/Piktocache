@@ -1,4 +1,8 @@
 @font-face {
-    font-family: SF_Pixelate;
-    src: url('../assets/sf_pixelate/SF\ Pixelate.ttf');
+    font-family: 'Pixelated';
+    src: url('./assets/sf_pixelate/SF\ Pixelate.ttf');
+}
+
+.pixelated {
+    font-family: 'Pixelated';
 }
