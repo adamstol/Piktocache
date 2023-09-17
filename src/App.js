@@ -5,6 +5,8 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import 'firebase/compat/auth';
 import 'firebase/compat/analytics';
+import Drawer from './components/Drawer'
+import Signout from './components/Signout'
 
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
@@ -42,6 +44,8 @@ useEffect(() => {
 
 
   const [user] = useAuthState(auth);
+  const [isOpen, setIsOpen] = useState();
+  const [color, setColor] = useState("#000000");
 
   return (
     <div className="App">
@@ -56,11 +60,15 @@ useEffect(() => {
           </svg>
 
         </h1>
-        <SignOut />
+        <Signout auth={auth}/>
       </header>
+      
+      <div className={isOpen ? "drawer open" : "drawer hide"}>
+        <Drawer isOpen={isOpen} setIsOpen={setIsOpen}/>
+      </div>        
 
       <section>
-        {user ? <ChatRoom userIp={userIp}/> : <SignIn />}
+        {user ? <ChatRoom userIp={userIp} isOpen={isOpen} setIsOpen={setIsOpen}/> : <SignIn />}
       </section>
 
     </div>
@@ -82,14 +90,8 @@ function SignIn() {
 
 }
 
-function SignOut() {
-  return auth.currentUser && (
-    <button className="sign-out" onClick={() => auth.signOut()}>Sign Out</button>
-  )
-}
 
-
-function ChatRoom() {
+function ChatRoom({isOpen, setIsOpen}) {
   const dummy = useRef();
   const messagesRef = firestore.collection('messages');
   //console.log('userIp ',userIp)
@@ -137,16 +139,19 @@ function ChatRoom() {
 
     const { uid, photoURL } = auth.currentUser;
 
-    await messagesRef.add({
-      text: formValue,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      uid,
-      photoURL,
-      userIp
-    })
+    if (formValue.trim().length > 0){
+      await messagesRef.add({
+        text: formValue,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        uid,
+        photoURL,
+        userIp
+      })
 
-    setFormValue('');
-    dummy.current.scrollIntoView({ behavior: 'smooth' });
+      setFormValue('');
+      dummy.current.scrollIntoView({ behavior: 'smooth' });      
+    }
+
   }
 
   return (<>
@@ -162,7 +167,9 @@ function ChatRoom() {
 
       <input value={formValue} onChange={(e) => setFormValue(e.target.value)} placeholder="Write a message" />
       
-      <button id="openDrawing"> Draw </button>
+      <button id="openDrawing" onClick={() => {
+        setIsOpen(true);
+      }}>Draw</button>
       <button type="submit" disabled={!formValue}>💬</button>
     </form>
   </>)
