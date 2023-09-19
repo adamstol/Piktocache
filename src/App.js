@@ -13,7 +13,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 firebase.initializeApp({
-  apiKey: "AIzaSyA6og4aGbQpuloGA348KA38v-SaADuuwY0",
+  apiKey: process.env.API_KEY,
   authDomain: "piktocache.firebaseapp.com",
   databaseURL: "https://piktocache-default-rtdb.firebaseio.com",
   projectId: "piktocache",
